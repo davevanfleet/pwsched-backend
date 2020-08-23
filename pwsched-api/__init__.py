@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from .database.db import initialize_db
+from database.db import initialize_db
 
 
 def create_app(test_config=None):
