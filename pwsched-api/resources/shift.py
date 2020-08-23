@@ -3,7 +3,7 @@ from flask_restful import Resource
 from database.models import Shift
 
 
-class ShiftApi(Resouce):
+class ShiftApi(Resource):
     def get(self, id):
         shift = Shift.objects().get(id=id).to_json()
         return Response(shift, mimetype="application/json", status=200)

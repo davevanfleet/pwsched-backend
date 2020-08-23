@@ -1,6 +1,8 @@
 import os
 from flask import Flask
+from flask_restful import Api
 from database.db import initialize_db
+from resources.routes import initialize_routes
 
 
 def create_app(test_config=None):
@@ -9,7 +11,9 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
     )
+    api = Api(app)
     initialize_db(app)
+    initialize_routes(api)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
