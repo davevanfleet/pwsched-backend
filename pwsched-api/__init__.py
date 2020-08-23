@@ -1,8 +1,6 @@
 import os
 from flask import Flask
-from flask_mongoengine import MongoEngine
-
-db = MongoEngine()
+from .database.db import initialize_db
 
 
 def create_app(test_config=None):
@@ -11,7 +9,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
     )
-    db.init_app(app)
+    initialize_db(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
