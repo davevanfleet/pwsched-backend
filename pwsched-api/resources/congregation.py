@@ -25,6 +25,6 @@ class CongregationsApi(Resource):
 
     def post(self):
         body = request.get_json()
-        congregation = Congreagation(**body).save()
+        congregation = Congregation(**body).save()
         id = congregation.id
         return {'id': str(id)}, 200
