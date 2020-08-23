@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_restful import Api
 from database.db import initialize_db
+from database.models import User, Role
 from resources.routes import initialize_routes
 
 
