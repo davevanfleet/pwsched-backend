@@ -1,6 +1,7 @@
-from flask import Response, request
+from flask import Response, request, Blueprint
 from flask_restful import Resource
-from flask_security import MongoEngineUserDatastore, hash_password
+from flask_security import MongoEngineUserDatastore, hash_password, \
+                            verify_password, login_user
 from database.models import User, Role
 from database.db import db
 from IPython import embed
@@ -35,3 +36,25 @@ class UsersApi(Resource):
         user = user_datastore.create_user(email=email,
                                           password=hash_password(password))
         return Response(user, mimetype="application/json", status=200)
+
+
+sessions_blueprint = Blueprint('sessions', __name__)
+
+
+@sessions_blueprint.route('/login', methods=['POST'])
+def login():
+    body = request.get_json()
+    email = body["email"]
+    password = body["password"]
+    user = user_datastore.get_user(email)
+    if verify_password(password, user.password):
+        login_user(user)
+        return Response(user.id, mimetype="application/json", status=200)
+    else:
+        return Response({"error": "unable to login"},
+                        mimetype="application/json", status=200)
+
+
+@sessions_blueprint.route('/logout', methods=['POST'])
+def logout():
+    pass

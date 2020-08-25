@@ -1,6 +1,6 @@
 from .shift import ShiftApi, ShiftsApi
 from .congregation import CongregationApi, CongregationsApi
-from .user import UserApi, UsersApi
+from .auth import UserApi, UsersApi
 
 
 def initialize_routes(api):

@@ -2,9 +2,10 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_security import Security
+import flask_wtf
 from database.db import initialize_db
 from database.models import User, Role
-from resources.user import user_datastore
+from resources.auth import user_datastore, sessions_blueprint
 from resources.routes import initialize_routes
 
 
@@ -14,11 +15,19 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.environ.get("SECRET_KEY"),
         SECURITY_PASSWORD_SALT=os.environ.get("SECURITY_PASSWORD_SALT"),
+        SECURITY_CSRF_COOKIE={"key": "XSRF-TOKEN"},
+        SECURITY_POST_LOGIN_VIEW=None,
+        SECURITY_POST_LOGOUT_VIEW=None,
+        WTF_CSRF_TIME_LIMIT=None,
+        WTF_CSRF_CHECK_DEFAULT=False,
+        SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS=True
     )
     api = Api(app)
     initialize_db(app)
     initialize_routes(api)
-    security = Security(app, user_datastore)
+    app.register_blueprint(sessions_blueprint)
+    security = Security(app, user_datastore, register_blueprint=False)
+    flask_wtf.CSRFProtect(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
