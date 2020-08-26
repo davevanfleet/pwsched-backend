@@ -5,7 +5,7 @@ from flask_security import Security
 import flask_wtf
 from database.db import initialize_db
 from database.models import User, Role
-from resources.auth import user_datastore, sessions_blueprint
+from resources.auth import user_datastore, sessions_blueprint, users_blueprint
 from resources.routes import initialize_routes
 
 
@@ -24,6 +24,7 @@ def create_app(test_config=None):
     initialize_db(app)
     initialize_routes(api)
     app.register_blueprint(sessions_blueprint)
+    app.register_blueprint(users_blueprint)
     security = Security(app, user_datastore, register_blueprint=False)
     flask_wtf.CSRFProtect(app)
 
