@@ -4,6 +4,7 @@ from flask_security import UserMixin, RoleMixin
 
 class Congregation(db.Document):
     name = db.StringField(required=True)
+    volunteers = db.ListField(db.ReferenceField("User"))
 
 
 class Shift(db.Document):

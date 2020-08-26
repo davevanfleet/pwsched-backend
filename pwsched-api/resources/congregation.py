@@ -6,7 +6,7 @@ from database.models import Congregation
 class CongregationApi(Resource):
     def get(self, id):
         congregation = Congregation.objects().get(id=id).to_json()
-        return Response(congreagtion, mimetype="application/json", status=200)
+        return Response(congregation, mimetype="application/json", status=200)
 
     def put(self, id):
         body = request.get_json()

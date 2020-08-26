@@ -23,6 +23,8 @@ def register():
     password = body["password"]
     user = user_datastore.create_user(email=email,
                                       password=hash_password(password))
+    volunteer_role = user_datastore.find_role("Volunteer")
+    user_datastore.add_role_to_user(user, volunteer_role)
     login_user(user)
     token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
     return (jsonify({"email": user.email}), 200,
