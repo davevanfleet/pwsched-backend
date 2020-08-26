@@ -16,11 +16,9 @@ def create_app(test_config=None):
         SECRET_KEY=os.environ.get("SECRET_KEY"),
         SECURITY_PASSWORD_SALT=os.environ.get("SECURITY_PASSWORD_SALT"),
         SECURITY_CSRF_COOKIE={"key": "XSRF-TOKEN"},
-        SECURITY_POST_LOGIN_VIEW=None,
-        SECURITY_POST_LOGOUT_VIEW=None,
+        SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS=True,
         WTF_CSRF_TIME_LIMIT=None,
-        WTF_CSRF_CHECK_DEFAULT=False,
-        SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS=True
+        WTF_CSRF_CHECK_DEFAULT=False
     )
     api = Api(app)
     initialize_db(app)
