@@ -12,6 +12,7 @@ from IPython import embed
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)
 
+
 users_blueprint = Blueprint('users', __name__)
 
 
