@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_restful import Api
+from flask_restful_swagger import swagger
 from flask_security import Security
 import flask_wtf
 from database.db import initialize_db
@@ -21,7 +22,8 @@ def create_app(test_config=None):
         WTF_CSRF_CHECK_DEFAULT=False,
         MONGODB_SETTINGS={'host': 'mongodb://localhost/pwsched'}
     )
-    api = Api(app)
+    # api = Api(app)
+    api = swagger.docs(Api(app), apiVersion='0.1')
     initialize_db(app)
     initialize_routes(api)
     app.register_blueprint(sessions_blueprint)
