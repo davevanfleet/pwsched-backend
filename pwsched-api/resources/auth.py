@@ -26,7 +26,10 @@ def register():
     volunteer_role = user_datastore.find_role("Volunteer")
     user_datastore.add_role_to_user(user, volunteer_role)
     login_user(user)
-    token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
+    token = (
+        jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
+        .decode('utf-8')
+    )
     return (jsonify({"user": {"email": user.email}}), 200,
             {"Set-Cookie": f'auth={token}'})
 
@@ -42,7 +45,10 @@ def login():
     user = user_datastore.get_user(email)
     if user and verify_password(password, user.password):
         login_user(user)
-        token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY")).decode('utf-8')
+        token = (
+            jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
+            .decode('utf-8')
+        )
         return (jsonify({"user": {"email": user.email}}), 200,
                 {"Set-Cookie": f'auth={token}'})
     else:
