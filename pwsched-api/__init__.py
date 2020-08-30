@@ -33,7 +33,7 @@ def create_app(test_config=None):
     user_datastore.find_or_create_role("Admin")
     user_datastore.find_or_create_role("Volunteer")
     flask_wtf.CSRFProtect(app)
-    CORS(app)
+    CORS(app, supports_credentials=True)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
