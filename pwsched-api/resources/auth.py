@@ -42,7 +42,7 @@ def login():
     user = user_datastore.get_user(email)
     if user and verify_password(password, user.password):
         login_user(user)
-        token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
+        token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY")).decode('utf-8')
         return (jsonify({"user": {"email": user.email}}), 200,
                 {"Set-Cookie": f'auth={token}'})
     else:
@@ -55,3 +55,12 @@ def logout():
     res.delete_cookie('auth')
     logout_user()
     return res, 200
+
+
+@sessions_blueprint.route('/get_current_user', methods=['POST'])
+def get_current_user():
+    token = request.cookies["auth"]
+    email = jwt.decode(token, os.environ.get("SECRET_KEY"))['email']
+    user = user_datastore.get_user(email)
+    login_user(user)
+    return jsonify({"user": {"email": user.email}}), 200
