@@ -27,7 +27,7 @@ def register():
     user_datastore.add_role_to_user(user, volunteer_role)
     login_user(user)
     token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
-    return (jsonify({"email": user.email}), 200,
+    return (jsonify({"user": {"email": user.email}}), 200,
             {"Set-Cookie": f'auth={token}'})
 
 
@@ -40,18 +40,18 @@ def login():
     email = body["email"]
     password = body["password"]
     user = user_datastore.get_user(email)
-    if verify_password(password, user.password):
+    if user and verify_password(password, user.password):
         login_user(user)
         token = jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
-        return (jsonify({"email": user.email}), 200,
+        return (jsonify({"user": {"email": user.email}}), 200,
                 {"Set-Cookie": f'auth={token}'})
     else:
-        return jsonify({"error": "unable to login"}), 200
+        return jsonify({"error": "unable to login"}), 401
 
 
 @sessions_blueprint.route('/logout', methods=['POST'])
 def logout():
-    res = make_response('', 200)
+    res = make_response(jsonify({"message": "successfully logged out"}), 200)
     res.delete_cookie('auth')
     logout_user()
     return res, 200

@@ -3,6 +3,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_restful_swagger import swagger
 from flask_security import Security
+from flask_cors import CORS
 import flask_wtf
 from database.db import initialize_db
 from database.models import User, Role
@@ -32,6 +33,7 @@ def create_app(test_config=None):
     user_datastore.find_or_create_role("Admin")
     user_datastore.find_or_create_role("Volunteer")
     flask_wtf.CSRFProtect(app)
+    CORS(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
