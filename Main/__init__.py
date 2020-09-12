@@ -7,6 +7,7 @@ from flask_security import Security
 from flask_cors import CORS
 from flask_mongoengine import MongoEngine
 from Main.Congregation.views import congregations
+from Main.Shift.views import shifts
 # from database.db import initialize_db
 # from database.models import User, Role
 # from resources.auth import user_datastore, sessions_blueprint, users_blueprint
@@ -37,6 +38,7 @@ def create_app(test_config=None):
     # user_datastore.find_or_create_role("Volunteer")
     db.init_app(app)
     app.register_blueprint(congregations, url_prefix='/congregations')
+    app.register_blueprint(shifts, url_prefix='/shifts')
     flask_wtf.CSRFProtect(app)
     CORS(app, supports_credentials=True)
 
