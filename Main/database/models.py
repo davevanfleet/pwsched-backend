@@ -1,14 +1,6 @@
 # from .db import db
 # from flask_security import UserMixin, RoleMixin
 
-
-# class Shift(db.Document):
-#     location = db.StringField(required=True)
-#     time = db.DateTimeField(required=True)
-#     volunteers = db.ListField(required=True, max_length=2)
-#     requested_by = db.ListField(db.ReferenceField("User"))
-
-
 # class Role(db.Document, RoleMixin):
 #     name = db.StringField(max_length=80, unique=True)
 #     description = db.StringField(max_length=255)

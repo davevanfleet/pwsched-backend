@@ -6,12 +6,8 @@ from flask import Flask
 from flask_security import Security
 from flask_cors import CORS
 from flask_mongoengine import MongoEngine
-from Main.Congregation.views import congregations
-from Main.Shift.views import shifts
-# from database.db import initialize_db
-# from database.models import User, Role
-# from resources.auth import user_datastore, sessions_blueprint, users_blueprint
-# from resources.routes import initialize_routes
+from Main.User.models import User, Role
+
 
 db = MongoEngine()
 
@@ -26,19 +22,26 @@ def create_app(test_config=None):
         SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS=True,
         WTF_CSRF_TIME_LIMIT=None,
         WTF_CSRF_CHECK_DEFAULT=False,
-        MONGODB_SETTINGS={'host': 'mongodb://localhost/pwsched'}
+        MONGODB_SETTINGS={
+            'host': ''
+        },
+        MONGO_URI='',
     )
-    # api = Api(app)
-    # initialize_db(app)
-    # initialize_routes(api)
-    # app.register_blueprint(sessions_blueprint)
-    # app.register_blueprint(users_blueprint)
-    # security = Security(app, user_datastore, register_blueprint=False)
-    # user_datastore.find_or_create_role("Admin")
-    # user_datastore.find_or_create_role("Volunteer")
+
     db.init_app(app)
+
+    from Main.Congregation.views import congregations
+    from Main.Shift.views import shifts
+    from Main.User.views import users_blueprint, sessions_blueprint
     app.register_blueprint(congregations, url_prefix='/congregations')
     app.register_blueprint(shifts, url_prefix='/shifts')
+    app.register_blueprint(sessions_blueprint)
+    app.register_blueprint(users_blueprint)
+
+    user_datastore.find_or_create_role("Admin")
+    user_datastore.find_or_create_role("Volunteer")
+
+    security = Security(app, user_datastore, register_blueprint=False)
     flask_wtf.CSRFProtect(app)
     CORS(app, supports_credentials=True)
 
