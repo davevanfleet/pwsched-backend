@@ -7,7 +7,9 @@ from flask_login import LoginManager
 from flask_cors import CORS
 from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
+from Main.config import Config
 from Main.User.models import User
+from IPython import embed
 
 
 db = MongoEngine()
@@ -23,20 +25,7 @@ login_manager.login_message_category = 'info'
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get("SECRET_KEY"),
-        SECURITY_PASSWORD_SALT=os.environ.get("SECURITY_PASSWORD_SALT"),
-        SECURITY_CSRF_COOKIE={"key": "XSRF-TOKEN"},
-        SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS=True,
-        WTF_CSRF_TIME_LIMIT=None,
-        WTF_CSRF_CHECK_DEFAULT=False,
-        MONGODB_SETTINGS={
-            'host': 'mongodb+srv://dvanfleet:FBjnn4SrznirE6BO@cluster0.f0v1z.'
-                    'mongodb.net/pwsched?retryWrites=true&w=majority'
-        },
-        MONGO_URI='mongodb+srv://dvanfleet:FBjnn4SrznirE6BO@cluster0.f0v1z.'
-                  'mongodb.net/pwsched?retryWrites=true&w=majority',
-    )
+    app.config.from_object(Config)
 
     db.init_app(app)
     crypt.init_app(app)
