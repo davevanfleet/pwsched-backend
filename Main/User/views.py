@@ -1,13 +1,14 @@
 import jwt
 import os
-from flask import make_response, request, Blueprint, jsonify
-from flask_security import hash_password, verify_password, login_user,\
-    current_user, logout_user
-from .models import User, Role
+from _datetime import datetime
+from flask import Blueprint, request, make_response, jsonify
+from flask_login import login_user, logout_user
+from .models import User
+from Main import crypt
 from Main.Congregation.models import Congregation
-from flask_security import MongoEngineUserDatastore
+from Main.utils import *
+from IPython import embed
 
-user_datastore = MongoEngineUserDatastore(db, User, Role)
 users_blueprint = Blueprint('users', __name__)
 
 
@@ -16,17 +17,21 @@ def register():
     body = request.get_json()
     email = body["email"]
     password = body["password"]
+    name = body["name"]
+    hashed_password = (crypt.generate_password_hash(password)
+                       .decode('utf-8'))
     congregation = Congregation.objects().get(name=body["congregation"])
-    user = user_datastore.create_user(email=email,
-                                      password=hash_password(password))
-    volunteer_role = user_datastore.find_role("Volunteer")
-    user_datastore.add_role_to_user(user, volunteer_role)
+    user = User(email=email,
+                password=hashed_password,
+                name=name,
+                congregation=congregation.to_dbref())
+    user.save()
     login_user(user)
     token = (
         jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
         .decode('utf-8')
     )
-    return (jsonify({"user": {"email": user.email}}), 200,
+    return (jsonify({"user": user}), 200,
             {"Set-Cookie": f'auth={token}'})
 
 
@@ -35,26 +40,27 @@ sessions_blueprint = Blueprint('sessions', __name__)
 
 @sessions_blueprint.route('/login', methods=['POST'])
 def login():
-    body = request.get_json()
-    email = body["email"]
-    password = body["password"]
-    user = user_datastore.get_user(email)
-    if user and verify_password(password, user.password):
-        login_user(user)
-        token = (
-            jwt.encode({"email": user.email}, os.environ.get("SECRET_KEY"))
-            .decode('utf-8')
-        )
-        return (jsonify({"user": {"email": user.email}}), 200,
-                {"Set-Cookie": f'auth={token}'})
-    else:
-        return jsonify({"error": "unable to login"}), 401
+    def login():
+        body = request.get_json()
+        eamil = body["email"]
+        password = body["password"]
+        user = User.objects(email=email).first()
+        if user and crypt.check_password_hash(user.password, password):
+            login_user(user)
+            user.user_meta.timestamps.append(datetime.utcnow)
+            user.save()
+            token = user.get_auth_token()
+            res = make_response(jsonify({"user": user}), 200)
+            res.set_cookie('user-auth', value=token, path='/')
+            return res
+        else:
+            return jsonify({"error": "unable to login"}), 401
 
 
 @sessions_blueprint.route('/logout', methods=['POST'])
 def logout():
     res = make_response(jsonify({"message": "successfully logged out"}), 200)
-    res.delete_cookie('auth')
+    res.delete_cookie('user-auth')
     logout_user()
     return res, 200
 
@@ -63,6 +69,6 @@ def logout():
 def get_current_user():
     token = request.cookies["auth"]
     email = jwt.decode(token, os.environ.get("SECRET_KEY"))['email']
-    user = user_datastore.get_user(email)
+    user = User.objects(email=email).first()
     login_user(user)
     return jsonify({"user": {"email": user.email}}), 200
