@@ -7,6 +7,14 @@ This is the backend RESTful API for the PWSched shift scheduling app
 - Flask
 - MongoDB
 
+## Installing
+
+- Fork and Clone this repo
+- set up virvual environment with `python3 -m venv venv` in project directory
+- start venv with `. venv/bin/activate`
+- install dependencies with `pip install -r requirements.txt`
+- run with `flask run`
+
 ## Contributing
 
-Contributions are always welcome.  Please check for any open issues when submitting PRs.  If you find a bug or have a feature request please submit it as a new issue.
+Contributions are always welcome.  Please check for any open issues when submitting PRs.  If you find a bug or have a feature request please submit it as a new issue. Please also include tests as appropriate.
