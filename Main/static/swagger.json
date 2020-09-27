@@ -1,0 +1,436 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "API for PWSched",
+      "version": "1.0.0",
+      "title": "PWSched API",
+      "contact": {
+        "email": "dvfleet413@gmail.com"
+      }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "user_meta": {
+                        "type": "object"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "confirmed": {
+                        "type": "boolean"
+                    },
+                    "congregation": {
+                        "type": "object"
+                    },
+                    "isActive": {
+                        "type": "boolean"
+                    },
+                    "shifts": {
+                        "type": "array"
+                    }
+                }
+            },
+            "Congregation": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "volunteers": {
+                        "type": "array"
+                    }
+                }
+            },
+            "Shift": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "string"
+                    },
+                    "volunteers": {
+                        "type": "array"
+                    },
+                    "requested_by": {
+                        "type": "array"
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/congregations": {
+            "get": {
+                "summary": "Get all congregations",
+                "description": "Returns an array of all Congregation objects stored in db",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }   
+            },
+            "post": {
+                "summary": "Create a new Congregation",
+                "description": "Uses data from request body to create a new Congregation.  Returns Congregation json on sucessful creation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }   
+        },
+        "/congregations/{id}": {
+            "get": {
+                "summary": "Returns single Congregation document",
+                "description": "Uses id parameter to find Congregation in db.  Returns Congregation in json response.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to return."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a Congregation document",
+                "description": "Finds Congregation based on id param, updates Congregation based on request body, returns updated Congregation on sucessful update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to return."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete Congregation document",
+                "description": "Finds Congregation document using id param.  Deletes document from db",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to return."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/congregations/{id}/shifts": {
+            "get": {
+                "summary": "Get all Shifts for a Congregation",
+                "description": "Returns an array of all Shift objects stored in db associated with Congregation with {id}",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to use."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }   
+            },
+            "post": {
+                "summary": "Create a new Shift in a Congregation",
+                "description": "Uses data from request body to create a new Shift. Shift is associated with Congregation with {id}. Returns Shift json on sucessful creation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to use."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                        "type": "string"
+                                    },
+                                    "time": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }   
+        },
+        "/congregations/{id}/shifts/{shift_id}": {
+            "get": {
+                "summary": "Returns single Shift document",
+                "description": "Uses id parameter to find Congregation in db.  Returns associated Shift with {shift_id} in json response.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to use."
+                    },
+                    {
+                        "in": "path",
+                        "name": "shift_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Shift to return"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a Shift document",
+                "description": "Finds Congregation based on id param, updates Shift with {shift_id} based on request body, returns updated Shift on sucessful update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to use."
+                    },
+                    {
+                        "in": "path",
+                        "name": "shift_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Shift to return"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                        "type": "string"
+                                    },
+                                    "time": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete Shift document",
+                "description": "Finds Congregation document using id param.  Deletes Shift document with {shift_id} from db",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Congregation to use."
+                    },
+                    {
+                        "in": "path",
+                        "name": "shift_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "ObjectId of the Shift to return"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "summary": "Create new User document",
+                "description": "Uses request body to create new User document. Associates user as a volunteer in existing Congregation, or as an admin in a new Congregation (logic handled in front end). Returns User json on successful account creation.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "congregation": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Login with existing credentials",
+                "description": "Authenticates User based on credentials. Upon successful authentication sets 'auth' and 'session' cookies for Flask_Login, and 'user-auth' cookie to remember User between sessions.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }  
+        },
+        "/logout": {
+            "post": {
+                "summary": "Logout and session",
+                "description": "Clears all auth cookies, ending user's session",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_current_user": {
+            "post": {
+                "summary": "Find remembered user and log User in",
+                "description": "Uses 'user-auth' cookie in headers to find current User. Logs user in and sets all necessary auth cookies with response.",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    }
+                }
+            }
+        }
+    }
+}

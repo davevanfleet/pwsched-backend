@@ -7,8 +7,8 @@ from flask_login import LoginManager
 from flask_cors import CORS
 from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
+from flask_swagger_ui import get_swaggerui_blueprint
 from Main.config import Config
-from Main.User.models import User
 from IPython import embed
 
 
@@ -24,7 +24,7 @@ login_manager.login_message_category = 'info'
 
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True) 
+    app = Flask(__name__, instance_relative_config=True)
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_object(Config)
@@ -55,6 +55,19 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    SWAGGER_URL = '/api/docs'
+    API_URL = '/static/swagger.json'
+
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={
+            'app_name': "PWSched API"
+        }
+    )
+
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
     @app.route('/ping', methods=['GET'])
     def ping():

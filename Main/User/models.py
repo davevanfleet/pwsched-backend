@@ -6,6 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from mongoengine import IntField, ListField, BooleanField, DateTimeField, \
     EmbeddedDocument, EmbeddedDocumentField, DictField, EmailField, \
     EmbeddedDocumentListField, StringField, ReferenceField
+from Main import login_manager
 
 
 class Meta(EmbeddedDocument):
@@ -26,6 +27,10 @@ class User(Document, UserMixin):
     def get_auth_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'user_id': str(self.id)}).decode('utf-8')
+    
+    @login_manager.user_loader
+    def load_user(id):
+        return User.objects(id=id).first()
 
     # User mixin methods
     def is_authenticated(self):
