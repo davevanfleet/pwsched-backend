@@ -13,7 +13,8 @@ def get_congregation(id):
 @congregations.route('/<id>', methods=['PUT'])
 def update_congregation(id):
     body = request.get_json()
-    congregation = Congregation.objects().get(id=id).update(**body)
+    Congregation.objects().get(id=id).update(**body)
+    congregation = Congregation.objects().get(id=id)
     return jsonify(congregation), 200
 
 
@@ -32,5 +33,5 @@ def get_congregations():
 @congregations.route('/', methods=['POST'])
 def create_congregation():
     body = request.get_json()
-    congregation = Congregation(**body).save()
+    congregation = Congregation(name=body['name']).save()
     return jsonify(congregation), 200
