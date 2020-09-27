@@ -21,7 +21,7 @@ login_manager.login_view = None
 login_manager.login_message_category = 'info'
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def app():
     app = create_app({
         "SECRET_KEY": 'test_secret',
@@ -43,12 +43,20 @@ def app():
     mongo.init_app(app)
     mail.init_app(app)
 
+    Congregation(name="English - Willimantic").save()
+    Shift(location="UConn",
+          datetime=datetime.now).save()
+    User(name="Brother Service Overseer",
+         email="fake@fakemail.com",
+         password="password",
+         congregation=(Congregation.objects().order_by('-id')
+                       .first().to_dbref())).save()
+
     yield app
 
     Congregation.objects().delete()
     Shift.objects().delete()
     User.objects().delete()
-
 
 
 @pytest.fixture
@@ -66,10 +74,7 @@ def test_ping(client):
     assert b'Hello, World!' in rv.data
 
 
-def test_db_has_been_cleared(client):
-    assert Congregation.objects().count() == 0
-
-
+# Model Tests
 def test_create_congregation(client):
     congregation = Congregation(
         name="Test Congregation"
@@ -92,17 +97,16 @@ def test_create_shift(client):
 
 
 def test_create_user(client):
-    congregation = Congregation(
-        name="Test Congregation"
-    ).save()
     user = User(
         name="Spongebob",
-        email="fake@fakemail.com",
+        email="fake2@fakemail.com",
         password="password",
         congregation=(Congregation.objects().order_by('-id')
                       .first().to_dbref())
     )
-    assert user.email == "fake@fakemail.com"
+    assert user.email == "fake2@fakemail.com"
     user.save()
     assert (User.objects().order_by('-id').first()
-            .email == "fake@fakemail.com")
+            .email == "fake2@fakemail.com")
+    assert (User.objects().order_by('-id').first()
+            .congregation.name == "English - Willimantic")
