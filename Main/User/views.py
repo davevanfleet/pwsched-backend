@@ -40,21 +40,20 @@ sessions_blueprint = Blueprint('sessions', __name__)
 
 @sessions_blueprint.route('/login', methods=['POST'])
 def login():
-    def login():
-        body = request.get_json()
-        eamil = body["email"]
-        password = body["password"]
-        user = User.objects(email=email).first()
-        if user and crypt.check_password_hash(user.password, password):
-            login_user(user)
-            user.user_meta.timestamps.append(datetime.utcnow)
-            user.save()
-            token = user.get_auth_token()
-            res = make_response(jsonify({"user": user}), 200)
-            res.set_cookie('user-auth', value=token, path='/')
-            return res
-        else:
-            return jsonify({"error": "unable to login"}), 401
+    body = request.get_json()
+    email = body["email"]
+    password = body["password"]
+    user = User.objects(email=email).first()
+    if user and crypt.check_password_hash(user.password, password):
+        login_user(user)
+        user.user_meta.timestamps.append(datetime.utcnow)
+        user.save()
+        token = user.get_auth_token()
+        res = make_response(jsonify({"user": user}), 200)
+        res.set_cookie('user-auth', value=token, path='/')
+        return res
+    else:
+        return jsonify({"error": "unable to login"}), 401
 
 
 @sessions_blueprint.route('/logout', methods=['POST'])
@@ -70,5 +69,8 @@ def get_current_user():
     token = request.cookies["auth"]
     email = jwt.decode(token, os.environ.get("SECRET_KEY"))['email']
     user = User.objects(email=email).first()
-    login_user(user)
-    return jsonify({"user": {"email": user.email}}), 200
+    if user:
+        login_user(user)
+        return jsonify({"user": {"email": user.email}}), 200
+    else:
+        return jsonify({"message": "unable to find user"}), 401
