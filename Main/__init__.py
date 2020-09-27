@@ -43,7 +43,8 @@ def create_app(test_config=None):
     from Main.Shift.views import shifts
     from Main.User.views import users_blueprint, sessions_blueprint
     app.register_blueprint(congregations, url_prefix='/congregations')
-    app.register_blueprint(shifts, url_prefix='/shifts')
+    app.register_blueprint(shifts,
+                           url_prefix='/congregations/<cong_id>/shifts')
     app.register_blueprint(sessions_blueprint)
     app.register_blueprint(users_blueprint)
 

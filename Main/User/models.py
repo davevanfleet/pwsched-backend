@@ -20,7 +20,7 @@ class User(Document, UserMixin):
     email = EmailField(required=True, unique=True)
     confirmed = BooleanField(default=False)
     password = StringField(min_length=8, required=True)
-    congregation = ReferenceField('Congregation')
+    congregation = ReferenceField('Congregation', required=True)
     isActive = BooleanField(default=True)
     shifts = ListField(ReferenceField('Shift'), default=[])
 

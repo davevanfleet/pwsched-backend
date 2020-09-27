@@ -1,5 +1,6 @@
 import os
 import pytest
+from datetime import datetime
 from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
 from flask_mail import Mail
@@ -7,6 +8,8 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from Main import create_app
 from Main.Congregation.models import Congregation
+from Main.Shift.models import Shift
+from Main.User.models import User
 
 db = MongoEngine()
 crypt = Bcrypt()
@@ -43,6 +46,9 @@ def app():
     yield app
 
     Congregation.objects().delete()
+    Shift.objects().delete()
+    User.objects().delete()
+
 
 
 @pytest.fixture
@@ -70,5 +76,33 @@ def test_create_congregation(client):
     )
     assert congregation.name == "Test Congregation"
     congregation.save()
-    assert (Congregation.objects(name="Test Congregation")
+    assert (Congregation.objects().order_by('-id')
             .first().name == "Test Congregation")
+
+
+def test_create_shift(client):
+    shift = Shift(
+        location="UConn",
+        datetime=datetime.now
+    )
+    assert shift.location == "UConn"
+    shift.save()
+    assert (Shift.objects().order_by('-id').first()
+            .location == "UConn")
+
+
+def test_create_user(client):
+    congregation = Congregation(
+        name="Test Congregation"
+    ).save()
+    user = User(
+        name="Spongebob",
+        email="fake@fakemail.com",
+        password="password",
+        congregation=(Congregation.objects().order_by('-id')
+                      .first().to_dbref())
+    )
+    assert user.email == "fake@fakemail.com"
+    user.save()
+    assert (User.objects().order_by('-id').first()
+            .email == "fake@fakemail.com")
