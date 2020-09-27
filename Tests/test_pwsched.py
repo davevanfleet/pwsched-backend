@@ -60,6 +60,10 @@ def test_ping(client):
     assert b'Hello, World!' in rv.data
 
 
+def test_db_has_been_cleared(client):
+    assert Congregation.objects().count() == 0
+
+
 def test_create_congregation(client):
     congregation = Congregation(
         name="Test Congregation"
