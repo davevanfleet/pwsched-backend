@@ -6,7 +6,7 @@ from flask_mail import Mail
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from Main import create_app
-from IPython import embed
+from Main.Congregation.models import Congregation
 
 db = MongoEngine()
 crypt = Bcrypt()
@@ -42,6 +42,8 @@ def app():
 
     yield app
 
+    Congregation.objects().delete()
+
 
 @pytest.fixture
 def client(app):
@@ -56,3 +58,13 @@ def runner(app):
 def test_ping(client):
     rv = client.get('/ping')
     assert b'Hello, World!' in rv.data
+
+
+def test_create_congregation(client):
+    congregation = Congregation(
+        name="Test Congregation"
+    )
+    assert congregation.name == "Test Congregation"
+    congregation.save()
+    assert (Congregation.objects(name="Test Congregation")
+            .first().name == "Test Congregation")
