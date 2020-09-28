@@ -45,11 +45,16 @@ def app():
     mongo.init_app(app)
     mail.init_app(app)
 
+    Shift.drop_collection()
+    Congregation.drop_collection()
+    User.drop_collection()
+
     congregation = Congregation(name="English - Willimantic").save()
     shift = Shift(location="UConn",
                   datetime=datetime.now,
                   congregation=congregation.to_dbref()).save()
     congregation.shifts.append(shift.to_dbref())
+    congregation.save()
     User(name="Brother Service Overseer",
          email="fake@fakemail.com",
          password="password",
@@ -58,9 +63,9 @@ def app():
 
     yield app
 
-    Congregation.objects().delete()
-    Shift.objects().delete()
-    User.objects().delete()
+    Shift.drop_collection()
+    Congregation.drop_collection()
+    User.drop_collection()
 
 
 @pytest.fixture
