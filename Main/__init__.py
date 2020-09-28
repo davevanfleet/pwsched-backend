@@ -30,7 +30,6 @@ def create_app(test_config=None):
         app.config.from_object(Config)
     else:
         # load the test config if passed in
-        print(test_config)
         app.config.from_mapping(test_config)
 
     db.init_app(app)

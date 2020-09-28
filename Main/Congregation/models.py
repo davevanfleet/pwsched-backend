@@ -1,5 +1,5 @@
 from flask_mongoengine import Document
-from mongoengine import StringField, ListField, ReferenceField, PULL
+from mongoengine import StringField, ListField, ReferenceField
 
 
 class Congregation(Document):

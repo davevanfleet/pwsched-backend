@@ -27,8 +27,8 @@ class User(Document, UserMixin):
 
     def get_auth_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'user_id': str(self.id)}).decode('utf-8')
-    
+        return s.dumps({'user_id': str(self.id), 'email': self.email}).decode('utf-8')
+  
     @login_manager.user_loader
     def load_user(id):
         return User.objects(id=id).first()

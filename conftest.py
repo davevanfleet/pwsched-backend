@@ -7,7 +7,7 @@ from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
 from flask_mail import Mail
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user
 from Main import create_app
 from Main.Congregation.models import Congregation
 from Main.Shift.models import Shift
@@ -26,8 +26,8 @@ def app():
     login_manager.login_message_category = 'info'
 
     app = create_app({
-        "SECRET_KEY": 'test_secret',
-        "SECURITY_PASSWORD_SALT": 'test-salt',
+        "SECRET_KEY": 'testsecret',
+        "SECURITY_PASSWORD_SALT": 'testsalt',
         "SECURITY_CSRF_COOKIE": {"key": "XSRF-TOKEN"},
         "SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS": True,
         "WTF_CSRF_TIME_LIMIT": None,
@@ -55,9 +55,10 @@ def app():
                   congregation=congregation.to_dbref()).save()
     congregation.shifts.append(shift.to_dbref())
     congregation.save()
+    hashed_password = crypt.generate_password_hash('password').decode('utf-8')
     User(name="Brother Service Overseer",
          email="fake@fakemail.com",
-         password="password",
+         password=hashed_password,
          congregation=(Congregation.objects().order_by('-id')
                        .first().to_dbref())).save()
 

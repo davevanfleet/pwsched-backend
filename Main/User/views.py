@@ -66,11 +66,14 @@ def logout():
 
 @sessions_blueprint.route('/get_current_user', methods=['POST'])
 def get_current_user():
-    token = request.cookies["auth"]
-    email = jwt.decode(token, os.environ.get("SECRET_KEY"))['email']
-    user = User.objects(email=email).first()
-    if user:
-        login_user(user)
-        return jsonify({"user": {"email": user.email}}), 200
-    else:
+    try:
+        token = request.cookies["auth"]
+        email = jwt.decode(token, os.environ.get("SECRET_KEY"))['email']
+        user = User.objects(email=email).first()
+        if user:
+            login_user(user)
+            return jsonify({"user": {"email": user.email}}), 200
+        else:
+            return jsonify({"message": "unable to find user"}), 401
+    except Exception:
         return jsonify({"message": "unable to find user"}), 401
