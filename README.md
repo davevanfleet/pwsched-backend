@@ -27,6 +27,10 @@ This app is currently in development, and is being refactored from a full-stack 
 Tests can be found in `./Tests`  
 Test suite is written with `pytest` and can be run using `$ pytest` in project directory.
 
+To view test coverage:  
+- `$ coverage run -m pytest`
+- `$ coverage report`
+
 ## Documentation
 
 Swagger docs can be found by installing and running the app, then navigating to `/api/docs`  

@@ -45,9 +45,11 @@ def app():
     mongo.init_app(app)
     mail.init_app(app)
 
-    Congregation(name="English - Willimantic").save()
-    Shift(location="UConn",
-          datetime=datetime.now).save()
+    congregation = Congregation(name="English - Willimantic").save()
+    shift = Shift(location="UConn",
+                  datetime=datetime.now,
+                  congregation=congregation.to_dbref()).save()
+    congregation.shifts.append(shift.to_dbref())
     User(name="Brother Service Overseer",
          email="fake@fakemail.com",
          password="password",
@@ -115,6 +117,7 @@ def test_create_user(client):
 
 
 # Endpoints Tests
+# Congreagtion Endpoints
 def test_get_congregations(client):
     response = client.get('/congregations/')
     assert response.status_code == 200
@@ -158,3 +161,6 @@ def test_delete_congregation(client):
     response = client.delete(f'/congregations/{cong_id}')
     assert response.status_code == 200
     assert len(Congregation.objects()) == 0
+
+
+# Shift Endpoints

@@ -18,6 +18,7 @@ class User(Document, UserMixin):
     user_meta = EmbeddedDocumentField(Meta, default=Meta)
     name = StringField(required=True, max_length=50)
     email = EmailField(required=True, unique=True)
+    role = StringField(default="volunteer")
     confirmed = BooleanField(default=False)
     password = StringField(min_length=8, required=True)
     congregation = ReferenceField('Congregation', required=True)
