@@ -47,13 +47,11 @@ def get_shifts(cong_id):
 def create_shift(cong_id):
     congregation = set_congregation(cong_id)
     body = request.get_json()
-    shift_time = datetime.strptime(body["datetime"], '%Y-%m-%dT%H:%M')
     shift = Shift(
         location=body["location"],
-        datetime=shift_time,
+        datetime=body["datetime"],
         congregation=congregation.to_dbref()
     )
-    shift.save()
-    congregation.shifts.append(shift.to_dbref())
+    congregation.shifts.append(shift)
     congregation.save()
     return jsonify(shift), 200

@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .models import Congregation
+from IPython import embed
 
 congregations = Blueprint('congregations', __name__)
 
