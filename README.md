@@ -1,4 +1,14 @@
-# PWSched Backend
+# *PLEASE NOTE*
+
+This project has been combined with it's frontend complement into a single containerized application.  Please visit the [new repository](https://github.com/davevanfleet/PWSched) for the current status of the project.
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+
+## PWSched Backend
 
 This is the backend RESTful API for the PWSched shift scheduling app.  Front end can be found [here](https://github.com/davevanfleet/pwsched-frontend) (also still in development).  
 
